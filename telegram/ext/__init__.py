@@ -22,6 +22,7 @@ from .dispatcher import Dispatcher
 from .jobqueue import JobQueue, Job
 from .updater import Updater
 from .callbackqueryhandler import CallbackQueryHandler
+from .callbackqueryregexhandler import CallbackQueryRegexHandler
 from .choseninlineresulthandler import ChosenInlineResultHandler
 from .commandhandler import CommandHandler
 from .handler import Handler
@@ -34,6 +35,6 @@ from .typehandler import TypeHandler
 from .conversationhandler import ConversationHandler
 
 __all__ = ('Dispatcher', 'JobQueue', 'Job', 'Updater', 'CallbackQueryHandler',
-           'ChosenInlineResultHandler', 'CommandHandler', 'Handler', 'InlineQueryHandler',
-           'MessageHandler', 'Filters', 'RegexHandler', 'StringCommandHandler',
-           'StringRegexHandler', 'TypeHandler', 'ConversationHandler')
+           'CallbackQueryRegexHandler', 'ChosenInlineResultHandler', 'CommandHandler', 'Handler',
+           'InlineQueryHandler', 'MessageHandler', 'Filters', 'RegexHandler',
+           'StringCommandHandler', 'StringRegexHandler', 'TypeHandler', 'ConversationHandler')
