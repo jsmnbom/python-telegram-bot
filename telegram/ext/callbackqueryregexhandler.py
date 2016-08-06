@@ -80,7 +80,7 @@ class CallbackQueryRegexHandler(Handler):
 
     def handle_update(self, update, dispatcher):
         optional_args = self.collect_optional_args(dispatcher)
-        match = re.match(self.pattern, update.callbackquery.data)
+        match = re.match(self.pattern, update.callback_query.data)
 
         if self.pass_groups:
             optional_args['groups'] = match.groups()
