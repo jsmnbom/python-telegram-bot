@@ -32,7 +32,7 @@ from tests.bots import get_bot
 TRAVIS = os.getenv('TRAVIS', False)
 
 if TRAVIS:
-    pytest_plugins = ['tests.travis_fold']
+    pytest_plugins = ['tests.travis_fold', 'tests.travis_wait_conflicting']
 
 # THIS KEY IS OBVIOUSLY COMPROMISED
 # DO NOT USE IN PRODUCTION!

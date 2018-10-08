@@ -256,6 +256,7 @@ class TestStickerSet(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No Sticker(set) for Appveyor bot (''yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_bot_methods_1(self, bot, sticker_set):
         with open('tests/data/telegram_sticker.png', 'rb') as f:
             file = bot.upload_sticker_file(95205500, f)
@@ -265,6 +266,7 @@ class TestStickerSet(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No Sticker(set) for Appveyor bot (''yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_bot_methods_2(self, bot, sticker_set):
         file_id = sticker_set.stickers[0].file_id
         assert bot.set_sticker_position_in_set(file_id, 1)
@@ -272,6 +274,7 @@ class TestStickerSet(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No Sticker(set) for Appveyor bot (''yet)')
     @flaky(10, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_bot_methods_3(self, bot, sticker_set):
         sleep(1)
         file_id = sticker_set.stickers[-1].file_id

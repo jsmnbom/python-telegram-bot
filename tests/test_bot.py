@@ -31,8 +31,11 @@ from telegram import (Bot, Update, ChatAction, TelegramError, User, InlineKeyboa
 from telegram.error import BadRequest, InvalidToken, NetworkError, RetryAfter
 from telegram.utils.helpers import from_timestamp
 
-BASE_TIME = time.time()
-HIGHSCORE_DELTA = 1450000000
+
+@pytest.fixture(scope='class')
+def game_score():
+    highscore_delta = 1450000000
+    return int(time.time()) - highscore_delta
 
 
 @pytest.fixture(scope='class')
@@ -92,6 +95,7 @@ class TestBot(object):
 
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_delete_message(self, bot, chat_id):
         message = bot.send_message(chat_id, text='will be deleted')
 
@@ -110,6 +114,7 @@ class TestBot(object):
 
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_send_venue(self, bot, chat_id):
         longitude = -46.788279
         latitude = -23.691288
@@ -134,6 +139,7 @@ class TestBot(object):
     @pytest.mark.xfail(raises=RetryAfter)
     @pytest.mark.skipif(python_implementation() == 'PyPy',
                         reason='Unstable on pypy for some reason')
+    @pytest.mark.conflicting
     def test_send_contact(self, bot, chat_id):
         phone_number = '+11234567890'
         first_name = 'Leandro'
@@ -149,6 +155,7 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (''yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_send_game(self, bot, chat_id):
         game_short_name = 'python_telegram_bot_test_game'
         message = bot.send_game(chat_id, game_short_name)
@@ -307,6 +314,7 @@ class TestBot(object):
     # TODO: Actually send updates to the test bot so this can be tested properly
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_get_updates(self, bot):
         bot.delete_webhook()  # make sure there is no webhook set if webhook tests failed
         updates = bot.get_updates(timeout=1)
@@ -318,6 +326,7 @@ class TestBot(object):
     @flaky(3, 1)
     @pytest.mark.timeout(15)
     @pytest.mark.xfail
+    @pytest.mark.conflicting
     def test_set_webhook_get_webhook_info_and_delete_webhook(self, bot):
         url = 'https://python-telegram-bot.org/test/webhook'
         max_connections = 7
@@ -387,14 +396,15 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
-    def test_set_game_score_1(self, bot, chat_id):
+    @pytest.mark.conflicting
+    def test_set_game_score_1(self, bot, chat_id, game_score):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
         game = bot.send_game(chat_id, game_short_name)
 
         message = bot.set_game_score(
             user_id=chat_id,
-            score=int(BASE_TIME) - HIGHSCORE_DELTA,
+            score=game_score,
             chat_id=game.chat_id,
             message_id=game.message_id)
 
@@ -406,16 +416,15 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
-    def test_set_game_score_2(self, bot, chat_id):
+    @pytest.mark.conflicting
+    def test_set_game_score_2(self, bot, chat_id, game_score):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
         game = bot.send_game(chat_id, game_short_name)
 
-        score = int(BASE_TIME) - HIGHSCORE_DELTA + 1
-
         message = bot.set_game_score(
             user_id=chat_id,
-            score=score,
+            score=game_score + 1,
             chat_id=game.chat_id,
             message_id=game.message_id,
             disable_edit_message=True)
@@ -428,33 +437,31 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
-    def test_set_game_score_3(self, bot, chat_id):
+    @pytest.mark.conflicting
+    def test_set_game_score_3(self, bot, chat_id, game_score):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
         game = bot.send_game(chat_id, game_short_name)
 
-        score = int(BASE_TIME) - HIGHSCORE_DELTA - 1
-
         with pytest.raises(BadRequest, match='Bot_score_not_modified'):
             bot.set_game_score(
                 user_id=chat_id,
-                score=score,
+                score=game_score - 1,
                 chat_id=game.chat_id,
                 message_id=game.message_id)
 
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
-    def test_set_game_score_4(self, bot, chat_id):
+    @pytest.mark.conflicting
+    def test_set_game_score_4(self, bot, chat_id, game_score):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
         game = bot.send_game(chat_id, game_short_name)
 
-        score = int(BASE_TIME) - HIGHSCORE_DELTA - 2
-
         message = bot.set_game_score(
             user_id=chat_id,
-            score=score,
+            score=game_score - 2,
             chat_id=game.chat_id,
             message_id=game.message_id,
             force=True)
@@ -466,11 +473,12 @@ class TestBot(object):
         # For some reason the returned message does not contain the updated score. need to fetch
         # the game again...
         game2 = bot.send_game(chat_id, game_short_name)
-        assert str(score) in game2.game.text
+        assert str(game_score - 2) in game2.game.text
 
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_set_game_score_too_low_score(self, bot, chat_id):
         # We need a game to set the score for
         game_short_name = 'python_telegram_bot_test_game'
@@ -483,13 +491,14 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
-    def test_get_game_high_scores(self, bot, chat_id):
+    @pytest.mark.conflicting
+    def test_get_game_high_scores(self, bot, chat_id, game_score):
         # We need a game to get the scores for
         game_short_name = 'python_telegram_bot_test_game'
         game = bot.send_game(chat_id, game_short_name)
         high_scores = bot.get_game_high_scores(chat_id, game.chat_id, game.message_id)
         # We assume that the other game score tests ran within 20 sec
-        assert pytest.approx(high_scores[0].score, abs=20) == int(BASE_TIME) - HIGHSCORE_DELTA
+        assert pytest.approx(high_scores[0].score, abs=20) == game_score
 
     # send_invoice is tested in test_invoice
 

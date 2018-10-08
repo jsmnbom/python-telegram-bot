@@ -22,6 +22,8 @@ import subprocess
 import sys
 from io import BytesIO
 
+import pytest
+
 from telegram import InputFile
 
 
