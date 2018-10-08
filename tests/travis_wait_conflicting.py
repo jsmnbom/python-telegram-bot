@@ -19,6 +19,7 @@
 import itertools
 import json
 import os
+import time
 
 import _pytest.config
 import certifi
@@ -68,20 +69,39 @@ def test_travis_wait_for_non_conflicting_bot():
     http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 
     while 1:
-        slug = quote_plus(os.getenv('TRAVIS_REPO_SLUG'))
+        slug = os.getenv('TRAVIS_REPO_SLUG')
+        if not slug:
+            return
+        slug = quote_plus(slug)
+
+        my_job_id = int(os.getenv('TRAVIS_JOB_ID', 0))
+        if my_job_id == 0:
+            return
+
         url = 'https://api.travis-ci.org/repo/{}/builds'.format(slug)
-        r = http.request('GET', url, fields={
-            'include': 'build.jobs',
-            'state': 'started'
-        })
+        r = http.request(
+            'GET',
+            url,
+            fields={
+                'include': 'build.jobs',
+                'state': 'started'
+            },
+            headers={
+                'Travis-API-Version': 3,
+                'User-Agent': 'python-telegram-bot build system'
+            }
+        )
 
         data = json.loads(r.data.decode('utf-8'))
 
-        jobs = itertools.chain(build['jobs'] for build in data['builds'])
+        jobs = itertools.chain(*[build['jobs'] for build in data['builds']])
         jobs = [job for job in jobs if job['state'] == 'started']
-        jobs.sort(key=lambda job: job.id)
+        jobs.sort(key=lambda job: job['id'])
 
-        print(jobs)
-        break
+        if my_job_id == jobs[0]:
+            terminal.write('\nIt is my turn to continue, wooo :D')
+            return
 
+        terminal.write('.')
 
+        time.sleep(5)
