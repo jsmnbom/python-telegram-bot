@@ -92,6 +92,7 @@ class TestBot(object):
 
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_delete_message(self, bot, chat_id):
         message = bot.send_message(chat_id, text='will be deleted')
 
@@ -110,6 +111,7 @@ class TestBot(object):
 
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_send_venue(self, bot, chat_id):
         longitude = -46.788279
         latitude = -23.691288
@@ -134,6 +136,7 @@ class TestBot(object):
     @pytest.mark.xfail(raises=RetryAfter)
     @pytest.mark.skipif(python_implementation() == 'PyPy',
                         reason='Unstable on pypy for some reason')
+    @pytest.mark.conflicting
     def test_send_contact(self, bot, chat_id):
         phone_number = '+11234567890'
         first_name = 'Leandro'
@@ -149,6 +152,7 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (''yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_send_game(self, bot, chat_id):
         game_short_name = 'python_telegram_bot_test_game'
         message = bot.send_game(chat_id, game_short_name)
@@ -389,6 +393,7 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_set_game_score_1(self, bot, chat_id):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
@@ -408,6 +413,7 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_set_game_score_2(self, bot, chat_id):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
@@ -430,6 +436,7 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_set_game_score_3(self, bot, chat_id):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
@@ -447,6 +454,7 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_set_game_score_4(self, bot, chat_id):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
@@ -473,6 +481,7 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_set_game_score_too_low_score(self, bot, chat_id):
         # We need a game to set the score for
         game_short_name = 'python_telegram_bot_test_game'
@@ -485,6 +494,7 @@ class TestBot(object):
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_get_game_high_scores(self, bot, chat_id):
         # We need a game to get the scores for
         game_short_name = 'python_telegram_bot_test_game'

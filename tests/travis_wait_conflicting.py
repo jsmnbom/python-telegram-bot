@@ -99,8 +99,12 @@ def test_travis_wait_for_non_conflicting_bot(capsys):
             jobs = [job for job in jobs if job['state'] == 'started']
             jobs.sort(key=lambda job: job['id'])
 
-            terminal.write('\nmy:{},jobs:{}'.format(my_job_id, ';'.join(jobs)))
-            if my_job_id == jobs[0]:
+            if not jobs:
+                return
+
+            terminal.write('\nmy:{},jobs:{}'.format(my_job_id, ';'.join([str(job['id']) for job in
+                                                                         jobs])))
+            if my_job_id == jobs[0]['id']:
                 terminal.write('\nIt is my turn to continue, wooo :D\n')
                 return
 
