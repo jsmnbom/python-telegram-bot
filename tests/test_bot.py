@@ -307,6 +307,7 @@ class TestBot(object):
     # TODO: Actually send updates to the test bot so this can be tested properly
     @flaky(3, 1)
     @pytest.mark.timeout(10)
+    @pytest.mark.conflicting
     def test_get_updates(self, bot):
         bot.delete_webhook()  # make sure there is no webhook set if webhook tests failed
         updates = bot.get_updates(timeout=1)
@@ -318,6 +319,7 @@ class TestBot(object):
     @flaky(3, 1)
     @pytest.mark.timeout(15)
     @pytest.mark.xfail
+    @pytest.mark.conflicting
     def test_set_webhook_get_webhook_info_and_delete_webhook(self, bot):
         url = 'https://python-telegram-bot.org/test/webhook'
         max_connections = 7
