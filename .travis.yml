@@ -39,8 +39,7 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION != 'pypy'* ]]; then pip install ujson; fi
 
 script:
-  - pytest -v -m nocoverage
-  - pytest -v -m "not nocoverage" tests/test_bot.py --cov
+  - pytest -v "tests/test_bot.py"
 
 after_success:
   - coverage combine
