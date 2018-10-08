@@ -327,6 +327,7 @@ class TestUpdater(object):
         os.kill(os.getpid(), signal.SIGTERM)
 
     @signalskip
+    @pytest.mark.conflicting
     def test_idle(self, updater, caplog):
         updater.start_polling(0.01)
         Thread(target=partial(self.signal_sender, updater=updater)).start()

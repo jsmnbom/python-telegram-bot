@@ -23,6 +23,7 @@ import time
 
 import _pytest.config
 import certifi
+import pytest
 import telegram.vendor.ptb_urllib3.urllib3 as urllib3
 from future.backports.urllib.parse import quote_plus
 
@@ -37,6 +38,7 @@ def partition(items, predicate=bool):
             (item for pred, item in b if pred))
 
 
+@pytest.hookimpl(trylast=True)
 def pytest_collection_modifyitems(session, config, items):
     global terminal
     if terminal is None:
