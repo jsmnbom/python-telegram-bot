@@ -51,8 +51,8 @@ def pytest_collection_modifyitems(session, config, items):
 
     non_conflicting, conflicting = partition(items, predicate)
 
+    conflicting = list(conflicting)
     if conflicting:
-        conflicting = list(conflicting)
         parent = next(candidate for candidate in conflicting[0].listchain()
                       if hasattr(candidate, 'module') and candidate.module == tests)
 
@@ -64,44 +64,46 @@ def pytest_collection_modifyitems(session, config, items):
     session.items = list(non_conflicting) + conflicting
 
 
-def test_travis_wait_for_non_conflicting_bot():
-    terminal.write('\nChecking for other running jobs')
-    http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
+def test_travis_wait_for_non_conflicting_bot(capsys):
+    with capsys.disabled():
+        terminal.write('\nChecking for other running jobs')
+        http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 
-    while 1:
-        slug = os.getenv('TRAVIS_REPO_SLUG')
-        if not slug:
-            return
-        slug = quote_plus(slug)
+        while 1:
+            slug = os.getenv('TRAVIS_REPO_SLUG')
+            if not slug:
+                return
+            slug = quote_plus(slug)
 
-        my_job_id = int(os.getenv('TRAVIS_JOB_ID', 0))
-        if my_job_id == 0:
-            return
+            my_job_id = int(os.getenv('TRAVIS_JOB_ID', 0))
+            if my_job_id == 0:
+                return
 
-        url = 'https://api.travis-ci.org/repo/{}/builds'.format(slug)
-        r = http.request(
-            'GET',
-            url,
-            fields={
-                'include': 'build.jobs',
-                'state': 'started'
-            },
-            headers={
-                'Travis-API-Version': 3,
-                'User-Agent': 'python-telegram-bot build system'
-            }
-        )
+            url = 'https://api.travis-ci.org/repo/{}/builds'.format(slug)
+            r = http.request(
+                'GET',
+                url,
+                fields={
+                    'include': 'build.jobs',
+                    'state': 'started'
+                },
+                headers={
+                    'Travis-API-Version': 3,
+                    'User-Agent': 'python-telegram-bot build system'
+                }
+            )
 
-        data = json.loads(r.data.decode('utf-8'))
+            data = json.loads(r.data.decode('utf-8'))
 
-        jobs = itertools.chain(*[build['jobs'] for build in data['builds']])
-        jobs = [job for job in jobs if job['state'] == 'started']
-        jobs.sort(key=lambda job: job['id'])
+            jobs = itertools.chain(*[build['jobs'] for build in data['builds']])
+            jobs = [job for job in jobs if job['state'] == 'started']
+            jobs.sort(key=lambda job: job['id'])
 
-        if my_job_id == jobs[0]:
-            terminal.write('\nIt is my turn to continue, wooo :D')
-            return
+            terminal.write('\nmy:{},jobs:{}'.format(my_job_id, ';'.join(jobs)))
+            if my_job_id == jobs[0]:
+                terminal.write('\nIt is my turn to continue, wooo :D\n')
+                return
 
-        terminal.write('.')
+            terminal.write('.')
 
-        time.sleep(5)
+            time.sleep(5)
