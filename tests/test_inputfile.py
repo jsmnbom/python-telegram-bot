@@ -22,12 +22,15 @@ import subprocess
 import sys
 from io import BytesIO
 
+import pytest
+
 from telegram import InputFile
 
 
 class TestInputFile(object):
     png = os.path.join('tests', 'data', 'game.png')
 
+    @pytest.mark.conflicting
     def test_subprocess_pipe(self):
         if sys.platform == 'win32':
             cmd = ['type', self.png]

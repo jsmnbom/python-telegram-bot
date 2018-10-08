@@ -35,6 +35,7 @@ class TestLabeledPrice(object):
         assert labeled_price.label == self.label
         assert labeled_price.amount == self.amount
 
+    @pytest.mark.conflicting
     def test_to_dict(self, labeled_price):
         labeled_price_dict = labeled_price.to_dict()
 
