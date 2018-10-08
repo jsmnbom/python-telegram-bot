@@ -40,7 +40,7 @@ install:
 
 script:
   - pytest -v -m nocoverage
-  - pytest -v -m "not nocoverage" --cov
+  - pytest -v -m "not nocoverage" tests/test_bot.py --cov
 
 after_success:
   - coverage combine
