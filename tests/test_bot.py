@@ -31,8 +31,11 @@ from telegram import (Bot, Update, ChatAction, TelegramError, User, InlineKeyboa
 from telegram.error import BadRequest, InvalidToken, NetworkError, RetryAfter
 from telegram.utils.helpers import from_timestamp
 
-BASE_TIME = time.time()
-HIGHSCORE_DELTA = 1450000000
+
+@pytest.fixture(scope='class')
+def game_score():
+    highscore_delta = 1450000000
+    return int(time.time()) - highscore_delta
 
 
 @pytest.fixture(scope='class')
@@ -394,14 +397,14 @@ class TestBot(object):
     @flaky(3, 1)
     @pytest.mark.timeout(10)
     @pytest.mark.conflicting
-    def test_set_game_score_1(self, bot, chat_id):
+    def test_set_game_score_1(self, bot, chat_id, game_score):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
         game = bot.send_game(chat_id, game_short_name)
 
         message = bot.set_game_score(
             user_id=chat_id,
-            score=int(BASE_TIME) - HIGHSCORE_DELTA,
+            score=game_score,
             chat_id=game.chat_id,
             message_id=game.message_id)
 
@@ -414,16 +417,14 @@ class TestBot(object):
     @flaky(3, 1)
     @pytest.mark.timeout(10)
     @pytest.mark.conflicting
-    def test_set_game_score_2(self, bot, chat_id):
+    def test_set_game_score_2(self, bot, chat_id, game_score):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
         game = bot.send_game(chat_id, game_short_name)
 
-        score = int(BASE_TIME) - HIGHSCORE_DELTA + 1
-
         message = bot.set_game_score(
             user_id=chat_id,
-            score=score,
+            score=game_score + 1,
             chat_id=game.chat_id,
             message_id=game.message_id,
             disable_edit_message=True)
@@ -437,17 +438,15 @@ class TestBot(object):
     @flaky(3, 1)
     @pytest.mark.timeout(10)
     @pytest.mark.conflicting
-    def test_set_game_score_3(self, bot, chat_id):
+    def test_set_game_score_3(self, bot, chat_id, game_score):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
         game = bot.send_game(chat_id, game_short_name)
 
-        score = int(BASE_TIME) - HIGHSCORE_DELTA - 1
-
         with pytest.raises(BadRequest, match='Bot_score_not_modified'):
             bot.set_game_score(
                 user_id=chat_id,
-                score=score,
+                score=game_score - 1,
                 chat_id=game.chat_id,
                 message_id=game.message_id)
 
@@ -455,16 +454,14 @@ class TestBot(object):
     @flaky(3, 1)
     @pytest.mark.timeout(10)
     @pytest.mark.conflicting
-    def test_set_game_score_4(self, bot, chat_id):
+    def test_set_game_score_4(self, bot, chat_id, game_score):
         # NOTE: numbering of methods assures proper order between test_set_game_scoreX methods
         game_short_name = 'python_telegram_bot_test_game'
         game = bot.send_game(chat_id, game_short_name)
 
-        score = int(BASE_TIME) - HIGHSCORE_DELTA - 2
-
         message = bot.set_game_score(
             user_id=chat_id,
-            score=score,
+            score=game_score - 2,
             chat_id=game.chat_id,
             message_id=game.message_id,
             force=True)
@@ -476,7 +473,7 @@ class TestBot(object):
         # For some reason the returned message does not contain the updated score. need to fetch
         # the game again...
         game2 = bot.send_game(chat_id, game_short_name)
-        assert str(score) in game2.game.text
+        assert str(game_score - 2) in game2.game.text
 
     @pytest.mark.skipif(os.getenv('APPVEYOR'), reason='No game made for Appveyor bot (yet)')
     @flaky(3, 1)
@@ -495,13 +492,13 @@ class TestBot(object):
     @flaky(3, 1)
     @pytest.mark.timeout(10)
     @pytest.mark.conflicting
-    def test_get_game_high_scores(self, bot, chat_id):
+    def test_get_game_high_scores(self, bot, chat_id, game_score):
         # We need a game to get the scores for
         game_short_name = 'python_telegram_bot_test_game'
         game = bot.send_game(chat_id, game_short_name)
         high_scores = bot.get_game_high_scores(chat_id, game.chat_id, game.message_id)
         # We assume that the other game score tests ran within 20 sec
-        assert pytest.approx(high_scores[0].score, abs=20) == int(BASE_TIME) - HIGHSCORE_DELTA
+        assert pytest.approx(high_scores[0].score, abs=20) == game_score
 
     # send_invoice is tested in test_invoice
 
