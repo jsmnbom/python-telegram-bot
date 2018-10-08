@@ -66,7 +66,7 @@ def pytest_collection_modifyitems(session, config, items):
 
 def test_travis_wait_for_non_conflicting_bot(capsys):
     with capsys.disabled():
-        terminal.write('\nChecking for other running jobs')
+        terminal.write('\nChecking for other running jobs\n')
         http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 
         while 1:
@@ -102,12 +102,11 @@ def test_travis_wait_for_non_conflicting_bot(capsys):
             if not jobs:
                 return
 
-            terminal.write('\nmy:{},jobs:{}'.format(my_job_id, ';'.join([str(job['id']) for job in
-                                                                         jobs])))
+            queue = ';'.join([str(job['id']) for job in jobs])
+            terminal.write('\rMy id: {} | Queue: {}'.format(my_job_id, queue))
+
             if my_job_id == jobs[0]['id']:
                 terminal.write('\nIt is my turn to continue, wooo :D\n')
                 return
-
-            terminal.write('.')
 
             time.sleep(5)
