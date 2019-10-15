@@ -27,24 +27,34 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Test
         run: |
-          python -m pip install --upgrade pip
-          pip install -U codecov pytest-cov
-          pip install ujson
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          echo $JOB_INDEX
+          echo $BOTS
+        env:
+          JOB_INDEX: ${{ strategy.job-index }}
+          BOTS: ${{ secrets.BOTS }}
+#      - name: Install dependencies
+#        run: |
+#          python -m pip install --upgrade pip
+#          pip install -U codecov pytest-cov
+#          pip install ujson
+#          pip install -r requirements.txt
+#          pip install -r requirements-dev.txt
 
-      - name: Test with pytest (no coverage)
-        run: |
-          pytest -v -m nocoverage
-      - name: Test with pytest (coverage)
-        run: |
-          pytest -v -m "not nocoverage"
-
-      - name: Compare to official api
-        run: |
-          pytest -v tests/test_official.py
+#      - name: Test with pytest (no coverage)
+#        run: |
+#          pytest -v -m nocoverage
+#        continue-on-error: True
+#      - name: Test with pytest (coverage)
+#        run: |
+#          pytest -v -m "not nocoverage"
+#        continue-on-error: True
+#
+#      - name: Compare to official api
+#        run: |
+#          pytest -v tests/test_official.py
+#        continue-on-error: True
 
       - run: |
           if [ "$CODECOV_TOKEN" != "" ]; then
