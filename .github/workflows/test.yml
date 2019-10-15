@@ -36,8 +36,11 @@ jobs:
       - name: Test with pytest (coverage)
         run: |
           pytest -v -m "not nocoverage"
-      - name: Submit coverage
-        run: |
-          coverage combine
-          codecov -F Github -t ${{ secrets.token-codecov }}
-        if: ${{ secrets.token_codecov }}
+
+      - run: |
+          if [ "$MY_SECRET" != "" ]; then
+             coverage combine
+             codecov -F Github -t $MY_SECRET
+          fi
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
