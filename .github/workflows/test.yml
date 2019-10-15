@@ -5,15 +5,19 @@ on:
       - master
 
 jobs:  
-  test_jobs:
+  pytest:
     name: pytest
     runs-on: ${{matrix.os}}
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7]
+        python-version: [2.7, 3.5, 3.6, 3.7, pypy2, pypy3]
         os: [ubuntu-latest]
       fail-fast: False
+      include:
+        - os: ubuntu-latest
+          python-version: 3.7
+          run-official: True
     steps:
       - uses: actions/checkout@v1
       - name: Initialize vendored libs
@@ -30,12 +34,17 @@ jobs:
           pip install ujson
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+
       - name: Test with pytest (no coverage)
         run: |
           pytest -v -m nocoverage
       - name: Test with pytest (coverage)
         run: |
           pytest -v -m "not nocoverage"
+
+      - name: Compare to official api
+        run: |
+          pytest -v tests/test_official.py
 
       - run: |
           if [ "$CODECOV_TOKEN" != "" ]; then
