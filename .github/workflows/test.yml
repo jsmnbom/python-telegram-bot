@@ -37,28 +37,28 @@ jobs:
 
       - name: Test with pytest (no coverage)
         run: |
-          pytest -v -m nocoverage
+          pytest -v tests/test_bot.py::TestBot::test_get_me_and_properties
         continue-on-error: True
         env:
           JOB_INDEX: ${{ strategy.job-index }}
           BOTS: ${{ secrets.BOTS }}
-      - name: Test with pytest (coverage)
-        run: |
-          pytest -v -m "not nocoverage"
-        continue-on-error: True
-        env:
-          JOB_INDEX: ${{ strategy.job-index }}
-          BOTS: ${{ secrets.BOTS }}
-
-      - name: Compare to official api
-        run: |
-          pytest -v tests/test_official.py
-        continue-on-error: True
-
-      - run: |
-          if [ "$CODECOV_TOKEN" != "" ]; then
-             coverage combine
-             codecov -F Github -t $CODECOV_TOKEN
-          fi
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+#      - name: Test with pytest (coverage)
+#        run: |
+#          pytest -v -m "not nocoverage"
+#        continue-on-error: True
+#        env:
+#          JOB_INDEX: ${{ strategy.job-index }}
+#          BOTS: ${{ secrets.BOTS }}
+#
+#      - name: Compare to official api
+#        run: |
+#          pytest -v tests/test_official.py
+#        continue-on-error: True
+#
+#      - run: |
+#          if [ "$CODECOV_TOKEN" != "" ]; then
+#             coverage combine
+#             codecov -F Github -t $CODECOV_TOKEN
+#          fi
+#        env:
+#          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

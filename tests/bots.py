@@ -18,6 +18,7 @@
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 """Provide a bot to tests"""
 import json
+import base64
 import os
 import random
 import sys
@@ -50,9 +51,11 @@ FALLBACKS = [
 GITHUB_ACTION = os.getenv('GITHUB_ACTION', False)
 BOTS = os.getenv('BOTS', None)
 JOB_INDEX = os.getenv('JOB_INDEX', None)
+print(GITHUB_ACTION, BOTS, JOB_INDEX)
 if GITHUB_ACTION and BOTS and JOB_INDEX:
-    BOTS = json.loads(BOTS)
+    BOTS = base64.b64decode(json.loads(BOTS))
     JOB_INDEX = int(JOB_INDEX)
+print(GITHUB_ACTION, BOTS, JOB_INDEX)
 
 
 def get(name, fallback):
