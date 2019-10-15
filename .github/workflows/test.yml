@@ -40,4 +40,4 @@ jobs:
         run: |
           coverage combine
           codecov -F Github -t ${{ secrets.token-codecov }}
-        if: ${{ secrets.token-codecov }}
+        if: ${{ secrets.token_codecov }}
