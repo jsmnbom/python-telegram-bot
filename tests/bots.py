@@ -48,11 +48,11 @@ FALLBACKS = [
     }
 ]
 
-GITHUB_ACTION = os.getenv('GITHUB_ACTION', False)
+GITHUB_ACTION = os.getenv('GITHUB_ACTION', None)
 BOTS = os.getenv('BOTS', None)
 JOB_INDEX = os.getenv('JOB_INDEX', None)
 print(GITHUB_ACTION, BOTS, JOB_INDEX)
-if GITHUB_ACTION and BOTS and JOB_INDEX:
+if GITHUB_ACTION is not None and BOTS is not None and JOB_INDEX is not None:
     BOTS = json.loads(base64.b64decode(BOTS))
     JOB_INDEX = int(JOB_INDEX)
 print(GITHUB_ACTION, BOTS, JOB_INDEX)
