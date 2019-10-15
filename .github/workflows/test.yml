@@ -13,11 +13,11 @@ jobs:
       matrix:
         python-version: [2.7, 3.5, 3.6, 3.7, pypy2, pypy3]
         os: [ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            python-version: 3.7
+            run-official: True
       fail-fast: False
-      include:
-        - os: ubuntu-latest
-          python-version: 3.7
-          run-official: True
     steps:
       - uses: actions/checkout@v1
       - name: Initialize vendored libs
