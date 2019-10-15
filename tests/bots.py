@@ -21,9 +21,6 @@ import json
 import base64
 import os
 import random
-import sys
-
-from platform import python_implementation
 
 # Provide some public fallbacks so it's easy for contributors to run tests on their local machine
 # These bots are only able to talk in our test chats, so they are quite useless for other
