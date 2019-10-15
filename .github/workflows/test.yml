@@ -37,7 +37,7 @@ jobs:
 
       - name: Test with pytest (no coverage)
         run: |
-          pytest -v tests/test_bot.py::TestBot::test_get_me_and_properties
+          pytest -v -s tests/test_bot.py::TestBot::test_get_me_and_properties
         continue-on-error: True
         env:
           JOB_INDEX: ${{ strategy.job-index }}
