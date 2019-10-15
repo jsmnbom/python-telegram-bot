@@ -82,10 +82,6 @@ class TestBot(object):
     def test_get_me_and_properties(self, bot):
         get_me_bot = bot.get_me()
 
-        print(get_me_bot)
-
-        raise RuntimeError
-
         assert isinstance(get_me_bot, User)
         assert get_me_bot.id == bot.id
         assert get_me_bot.username == bot.username
