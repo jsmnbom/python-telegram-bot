@@ -54,7 +54,8 @@ jobs:
           pytest -v tests/test_official.py
         continue-on-error: True
 
-      - run: |
+      - name: Submit coverage
+        run: |
           if [ "$CODECOV_TOKEN" != "" ]; then
              coverage combine
              codecov -F Github -t $CODECOV_TOKEN
