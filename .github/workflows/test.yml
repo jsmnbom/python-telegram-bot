@@ -53,6 +53,7 @@ jobs:
         run: |
           pytest -v tests/test_official.py
         continue-on-error: True
+        if: matrix.run-official
 
       - name: Submit coverage
         run: |
