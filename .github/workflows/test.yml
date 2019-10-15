@@ -38,9 +38,9 @@ jobs:
           pytest -v -m "not nocoverage"
 
       - run: |
-          if [ "$MY_SECRET" != "" ]; then
+          if [ "$CODECOV_TOKEN" != "" ]; then
              coverage combine
-             codecov -F Github -t $MY_SECRET
+             codecov -F Github -t $CODECOV_TOKEN
           fi
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
