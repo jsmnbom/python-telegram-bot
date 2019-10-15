@@ -66,7 +66,7 @@ def get(name, fallback):
         return val
 
     # If we're running as a github action then fetch bots from the repo secrets
-    if GITHUB_ACTION and BOTS and JOB_INDEX:
+    if GITHUB_ACTION is not None and BOTS is not None and JOB_INDEX is not None:
         return BOTS[JOB_INDEX][name]
 
     # Otherwise go with the fallback
